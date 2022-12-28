@@ -1,13 +1,14 @@
 import React from 'react';
-import Button from '@mui/material/Button';
-import DeleteIcon from '@mui/icons-material/Delete';
+import Bids from './components/Bids/Bids';
+import Header from './components/Header';
+import { Container } from '@mui/material';
 
 function App() {
   return (
-    <div>
-       <Button variant="contained"  color="success">This is a button</Button>
-			 <DeleteIcon />
-    </div>
+    <Container maxWidth="lg">
+      <Header />
+      <Bids />
+    </Container>
   );
 }
 
