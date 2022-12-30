@@ -1,16 +1,6 @@
-type BidItem = {
-	id: string,
-	name: string,
-	addQuality: string,
-	manufacturingTime: number,
-	warrantyPeriod: number,
-	payTerms: number,
-	cost: number,
-	discount: number
-}
 
 
-export const BidsData: BidItem[] = [
+export const BidsData = [
 	{
 		id: '001',
 		name: 'Участник 1',
