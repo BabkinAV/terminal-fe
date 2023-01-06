@@ -22,7 +22,9 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
   
 	const cachedSocket: Socket<ServerToClientEvents, ClientToServerEvents> = useMemo(()=> io(
     'http://localhost:8080'
-  ), [])
+  , {auth: {
+		token: 'abcd'
+	}}), [])
   cachedSocket.on('currentTimer', (counter, currentUser) => {
     setTimeLeft(counter);
 		setActiveParticipant(currentUser)
