@@ -7,8 +7,8 @@ const timerValue = 30;
 
 interface ServerToClientEvents {
   noArg: () => void;
-  timerReset: (counter: number, currentUser: number) => void;
-	currentTimer: (counter: number, currentUser: number) => void;
+  timerReset: (counter: number, currentUser: string) => void;
+	currentTimer: (counter: number, currentUser: string) => void;
 }
 
 interface ClientToServerEvents {
@@ -16,7 +16,7 @@ interface ClientToServerEvents {
 }
 
 const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
-  const [activeParticipant, setActiveParticipant] = useState(0);
+  const [activeParticipant, setActiveParticipant] = useState('');
   const [timeLeft, setTimeLeft] = useState(timerValue);
   const [currentTurn, setCurrentTurn] = useState(false);
   
@@ -61,7 +61,7 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
       <TableCell sx={{ height: '80px' }}></TableCell>
       {participantIdList.map((el) => (
         <TableCell key={el} align="center">
-          {participantIdList[activeParticipant] === el &&
+          {activeParticipant === el &&
             (currentTurn ? (
               <Button
                 variant="contained"

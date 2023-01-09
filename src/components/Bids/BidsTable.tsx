@@ -41,7 +41,7 @@ const BidsTable = () => {
     <TableContainer>
       <Table sx={{ minWidth: 650 }} aria-label="bids table">
         <TableHead sx={{ '& th': { px: 0 } }}>
-          <RowDynamic participantIdList={bidData.map((el) => el._id)} />
+          <RowDynamic participantIdList={bidData.map((el) => el.creator._id)} />
 
           <TableRow
             sx={{
