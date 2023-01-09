@@ -10,6 +10,7 @@ function App() {
 			name: 'участник 1'
 		}).then((response) => {
 			console.log(response.data.userId, ' ', response.data.token);
+			
 		})
 		
 	
@@ -20,7 +21,7 @@ function App() {
   return (
     <Container maxWidth="xl">
       <Header />
-      <Bids />
+      <Bids/>
     </Container>
   );
 }

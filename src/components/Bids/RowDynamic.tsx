@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { io, Socket } from 'socket.io-client';
+import jwtDecode from 'jwt-decode';
 import { TableRow, TableCell, Button } from '@mui/material';
 import convertSecondsFromString from '../../helpers/convertSecondsToString';
 
@@ -18,12 +19,12 @@ interface ClientToServerEvents {
 const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
   const [activeParticipant, setActiveParticipant] = useState('');
   const [timeLeft, setTimeLeft] = useState(timerValue);
-  const [currentTurn, setCurrentTurn] = useState(false);
+  const [loggedInUserId, setLoggedInUserId] = useState('');
   
 	const cachedSocket: Socket<ServerToClientEvents, ClientToServerEvents> = useMemo(()=> io(
     'http://localhost:8080'
   , {auth: {
-		token: 'abcd'
+		token: localStorage.getItem('token')
 	}}), [])
   cachedSocket.on('currentTimer', (counter, currentUser) => {
     setTimeLeft(counter);
@@ -50,6 +51,15 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
 
     return () => clearInterval(timerId);
   }, [timeLeft, activeParticipant, participantIdList]);
+
+	useEffect(() => {
+		let token = localStorage.getItem('token');
+		if (token) {
+			const userId = jwtDecode<{userId: string}>(token).userId;
+			setLoggedInUserId(userId);
+
+		}
+	}, [])
   return (
     <TableRow
       sx={{
@@ -62,14 +72,15 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
       {participantIdList.map((el) => (
         <TableCell key={el} align="center">
           {activeParticipant === el &&
-            (currentTurn ? (
+            (activeParticipant === loggedInUserId ? (
               <Button
                 variant="contained"
                 color="success"
                 disableElevation
+								onClick={onButtonClickHandler}
                 sx={{ width: '100%', lineHeight: '2.75' }}
               >
-                Ваш ход!
+                Ваш ход!({convertSecondsFromString(timeLeft)})
               </Button>
             ) : (
               <Button
