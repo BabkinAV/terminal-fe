@@ -3,6 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import jwtDecode from 'jwt-decode';
 import { TableRow, TableCell, Button } from '@mui/material';
 import convertSecondsFromString from '../../helpers/convertSecondsToString';
+import {useMatch} from 'react-router-dom'
 
 const timerValue = 30;
 
@@ -20,6 +21,8 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
   const [activeParticipant, setActiveParticipant] = useState('');
   const [timeLeft, setTimeLeft] = useState(timerValue);
   const [loggedInUserId, setLoggedInUserId] = useState('');
+
+	// const isSurveyor = useMatch("/surveyor")
 
 	const cachedSocket: Socket<ServerToClientEvents, ClientToServerEvents> = useMemo(()=> io(
     'http://localhost:8080'
@@ -66,7 +69,7 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
         },
       }}
     >
-      <TableCell sx={{ height: '80px' }}></TableCell>
+      <TableCell sx={{ height: '80px', color: 'info.main' }}>Ход</TableCell>
       {participantIdList.map((el) => (
         <TableCell key={el} align="center" sx={{ position: 'relative' }}>
           {activeParticipant === el &&
