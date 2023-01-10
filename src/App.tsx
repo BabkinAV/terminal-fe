@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, {  useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Container } from '@mui/material';
 

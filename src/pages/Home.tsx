@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,14 +13,18 @@ const participantsArr = [
   'участник 4',
 ];
 
-const Home = ({handleAuthorizedTrue}: {handleAuthorizedTrue: ()=> void}) => {
+const Home = ({
+  handleAuthorizedTrue,
+}: {
+  handleAuthorizedTrue: () => void;
+}) => {
   const navigate = useNavigate();
-	const [loginError, setLoginError] = useState('')
-
-
+  const [loginError, setLoginError] = useState('');
+  const [isDataLoading, setIsDataLoading] = useState(false);
 
   const onParticipantClickHandler = (participant: string) => {
-		setLoginError('');
+    setLoginError('');
+    setIsDataLoading(true);
     axios
       .post<{ userId: string; token: string }>('http://localhost:8080/login', {
         name: participant,
@@ -28,13 +32,14 @@ const Home = ({handleAuthorizedTrue}: {handleAuthorizedTrue: ()=> void}) => {
       .then((response) => {
         console.log(response.data.userId, ' ', response.data.token);
         localStorage.setItem('token', response.data.token);
-				handleAuthorizedTrue();
+        handleAuthorizedTrue();
         navigate('/participant');
       })
-      .catch((err : {message: string}) => {
-				setLoginError(err.message)
+      .catch((err: { message: string }) => {
+        setLoginError(err.message);
         console.log(err);
-      });
+      })
+      .finally(() => setIsDataLoading(false));
   };
 
   const onSurveyorClickHandler = () => {
@@ -50,34 +55,42 @@ const Home = ({handleAuthorizedTrue}: {handleAuthorizedTrue: ()=> void}) => {
         <Grid container spacing={8}>
           <Grid item xs={6}>
             {participantsArr.map((el) => (
-              <Button
+              <LoadingButton
                 variant="contained"
                 key={participantsArr.indexOf(el)}
                 disableElevation
+								loading={isDataLoading}
                 fullWidth
                 sx={{ my: 2 }}
                 onClick={() => onParticipantClickHandler(el)}
               >
                 {el}
-              </Button>
+              </LoadingButton>
             ))}
           </Grid>
           <Grid item xs={6}>
-            <Button
+            <LoadingButton
               variant="contained"
               disableElevation
               fullWidth
+							loading={isDataLoading}
               sx={{ my: 2 }}
               color="success"
               onClick={onSurveyorClickHandler}
             >
               Наблюдатель
-            </Button>
+            </LoadingButton>
           </Grid>
         </Grid>
-				{loginError && <Typography variant="body1" textAlign="center" sx={{ py: 4, color: 'red' }}>
-        Ошибка авторизации ({loginError})
-      </Typography>}
+        {loginError && (
+          <Typography
+            variant="body1"
+            textAlign="center"
+            sx={{ py: 4, color: 'red' }}
+          >
+            Ошибка авторизации ({loginError})
+          </Typography>
+        )}
       </Container>
     </>
   );

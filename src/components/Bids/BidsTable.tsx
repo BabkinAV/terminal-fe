@@ -8,6 +8,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+	Skeleton,
+	Box,
+	Typography
 } from '@mui/material';
 import RowDynamic from './RowDynamic';
 import axios from 'axios';
@@ -28,17 +31,30 @@ interface BidItem {
 
 const BidsTable = () => {
   const [bidData, setBidData] = useState<BidItem[]>([]);
+	const [isDataLoading, setIsDataLoading] = useState(false);
+	const [errorDataLoading, setErrorDataLoading] = useState('');
   useEffect(() => {
+		setErrorDataLoading('');
+		setIsDataLoading(true)
     axios
       .get<{ message: string; bids: BidItem[] }>('http://localhost:8080/bids')
       .then((response) => {
 				setBidData(response.data.bids)
 			})
-      .catch((err) => console.log(err));
+      .catch((err: { message: string }) => {
+        setErrorDataLoading(err.message);
+        console.log(err);
+      })
+			.finally(()=>setIsDataLoading(false));
   }, []);
 
   return (
-    <TableContainer>
+		isDataLoading ? (<Box sx={{width: '100%', pt: 20}}>
+			<Skeleton height={50} animation="wave"/>
+			<Skeleton height={50} animation="wave"/>
+			<Skeleton height={100} animation="wave"/>
+		</Box>) :
+   ( <TableContainer>
       <Table sx={{ minWidth: 650 }} aria-label="bids table">
         <TableHead sx={{ '& th': { px: 0 } }}>
           <RowDynamic participantIdList={bidData.map((el) => el.creator._id)} />
@@ -146,7 +162,16 @@ const BidsTable = () => {
           </TableRow>
         </TableBody>
       </Table>
-    </TableContainer>
+			{errorDataLoading && (
+          <Typography
+            variant="body1"
+            textAlign="center"
+            sx={{ py: 4, color: 'red' }}
+          >
+            Ошибка получения данных ({errorDataLoading})
+          </Typography>
+        )}
+    </TableContainer>)
   );
 };
 

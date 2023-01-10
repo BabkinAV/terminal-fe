@@ -22,13 +22,13 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
   const [timeLeft, setTimeLeft] = useState(timerValue);
   const [loggedInUserId, setLoggedInUserId] = useState('');
 
-	// const isSurveyor = useMatch("/surveyor")
+	const isSurveyor = useMatch("/surveyor")
 
 	const cachedSocket: Socket<ServerToClientEvents, ClientToServerEvents> = useMemo(()=> io(
     'http://localhost:8080'
   , {auth: {
-		token: localStorage.getItem('token')
-	}}), [])
+		token: (!isSurveyor) ? localStorage.getItem('token'): ''
+	}}), [isSurveyor])
   cachedSocket.on('currentTimer', (counter, currentUser) => {
     setTimeLeft(counter);
     setActiveParticipant(currentUser);
@@ -55,12 +55,15 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
   }, [timeLeft, activeParticipant, participantIdList]);
 
   useEffect(() => {
-    let token = localStorage.getItem('token');
+		if (!isSurveyor) {
+			let token = localStorage.getItem('token');
     if (token) {
       const userId = jwtDecode<{ userId: string }>(token).userId;
       setLoggedInUserId(userId);
-    }
-  }, []);
+    }	
+		}
+    
+  }, [isSurveyor]);
   return (
     <TableRow
       sx={{
@@ -73,7 +76,7 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
       {participantIdList.map((el) => (
         <TableCell key={el} align="center" sx={{ position: 'relative' }}>
           {activeParticipant === el &&
-            (activeParticipant === loggedInUserId ? (
+            (((activeParticipant === loggedInUserId) && !isSurveyor) ? (
               <Button
                 variant="contained"
                 color="success"
@@ -94,6 +97,7 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
             ) : (
               <Button
                 variant="contained"
+								disabled
                 disableElevation
                 sx={{
                   width: '150px',
@@ -105,7 +109,6 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
                   left: '(-50%)',
                   transform: 'translate(-50%, -50%)',
                 }}
-                onClick={onButtonClickHandler}
               >
                 {convertSecondsFromString(timeLeft)}
               </Button>
