@@ -1,8 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import Bids from './components/Bids/Bids';
-import Header from './components/Header';
-import { Container } from '@mui/material';
 import axios from 'axios';
+import {Routes, Route} from 'react-router-dom'
+import { Container } from '@mui/material';
+
+import Home from './pages/Home';
+import Participant from './pages/Participant';
+import NotFound from './404';
+
 
 function App() {
 	useEffect(() => {
@@ -10,6 +14,7 @@ function App() {
 			name: 'участник 1'
 		}).then((response) => {
 			console.log(response.data.userId, ' ', response.data.token);
+			localStorage.setItem('token', response.data.token)
 			
 		})
 		
@@ -20,8 +25,11 @@ function App() {
 	
   return (
     <Container maxWidth="xl">
-      <Header />
-      <Bids/>
+			<Routes>
+				<Route index element={<Home />}/>
+				<Route path="participant" element={<Participant />}/>
+				<Route path="*" element={<NotFound />}/>
+			</Routes>
     </Container>
   );
 }

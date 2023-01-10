@@ -9,18 +9,18 @@ const timerValue = 30;
 interface ServerToClientEvents {
   noArg: () => void;
   timerReset: (counter: number, currentUser: string) => void;
-	currentTimer: (counter: number, currentUser: string) => void;
+  currentTimer: (counter: number, currentUser: string) => void;
 }
 
 interface ClientToServerEvents {
-	timerSkip: () => void;
+  timerSkip: () => void;
 }
 
 const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
   const [activeParticipant, setActiveParticipant] = useState('');
   const [timeLeft, setTimeLeft] = useState(timerValue);
   const [loggedInUserId, setLoggedInUserId] = useState('');
-  
+
 	const cachedSocket: Socket<ServerToClientEvents, ClientToServerEvents> = useMemo(()=> io(
     'http://localhost:8080'
   , {auth: {
@@ -28,21 +28,20 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
 	}}), [])
   cachedSocket.on('currentTimer', (counter, currentUser) => {
     setTimeLeft(counter);
-		setActiveParticipant(currentUser)
+    setActiveParticipant(currentUser);
   });
-	cachedSocket.on('timerReset', (counter, currentUser) => {
-		setTimeLeft(counter);
-		setActiveParticipant(currentUser);
-	})
+  cachedSocket.on('timerReset', (counter, currentUser) => {
+    setTimeLeft(counter);
+    setActiveParticipant(currentUser);
+  });
 
-	const onButtonClickHandler = () => {
-		console.log('fired!');
-		cachedSocket.emit('timerSkip');
-	}
+  const onButtonClickHandler = () => {
+    console.log('fired!');
+    cachedSocket.emit('timerSkip');
+  };
   useEffect(() => {
     const timerId = setInterval(() => {
       if (timeLeft === 0) {
-        
         setTimeLeft(0);
       } else {
         setTimeLeft((previous) => previous - 1);
@@ -52,14 +51,13 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
     return () => clearInterval(timerId);
   }, [timeLeft, activeParticipant, participantIdList]);
 
-	useEffect(() => {
-		let token = localStorage.getItem('token');
-		if (token) {
-			const userId = jwtDecode<{userId: string}>(token).userId;
-			setLoggedInUserId(userId);
-
-		}
-	}, [])
+  useEffect(() => {
+    let token = localStorage.getItem('token');
+    if (token) {
+      const userId = jwtDecode<{ userId: string }>(token).userId;
+      setLoggedInUserId(userId);
+    }
+  }, []);
   return (
     <TableRow
       sx={{
@@ -70,29 +68,41 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
     >
       <TableCell sx={{ height: '80px' }}></TableCell>
       {participantIdList.map((el) => (
-        <TableCell key={el} align="center">
+        <TableCell key={el} align="center" sx={{ position: 'relative' }}>
           {activeParticipant === el &&
             (activeParticipant === loggedInUserId ? (
               <Button
                 variant="contained"
                 color="success"
                 disableElevation
-								onClick={onButtonClickHandler}
-                sx={{ width: '100%', lineHeight: '2.75' }}
+                onClick={onButtonClickHandler}
+                sx={{
+                  width: '200px',
+                  lineHeight: '1.5rem',
+                  position: 'absolute',
+                  top: '(-50%)',
+                  left: '(-50%)',
+                  transform: 'translate(-50%, -50%)',
+                }}
               >
-                Ваш ход!({convertSecondsFromString(timeLeft)})
+                Ваш ход!{' '}({convertSecondsFromString(timeLeft)})
+								(нажать)
               </Button>
             ) : (
               <Button
                 variant="contained"
-                disableElevation              
+                disableElevation
                 sx={{
-                  width: '100%',
-                  lineHeight: '2.75',
+                  width: '150px',
+                  lineHeight: '1.5rem',
                   backgroundColor: '#EDBFBF !important',
                   color: 'red !important',
+                  position: 'absolute',
+                  top: '(-50%)',
+                  left: '(-50%)',
+                  transform: 'translate(-50%, -50%)',
                 }}
-								onClick={onButtonClickHandler}
+                onClick={onButtonClickHandler}
               >
                 {convertSecondsFromString(timeLeft)}
               </Button>
