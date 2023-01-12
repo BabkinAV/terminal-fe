@@ -28,7 +28,7 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
 
 	useEffect(() => {
 		socketRef.current = io(
-			'http://terminal-be-production.up.railway.app'
+			'https://terminal-be-production.up.railway.app'
 		, {auth: {
 			token: (!isSurveyor) ? localStorage.getItem('token'): ''
 		}});
