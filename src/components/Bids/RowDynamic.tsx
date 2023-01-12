@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState,  useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 import jwtDecode from 'jwt-decode';
 import { TableRow, TableCell, Button } from '@mui/material';
@@ -22,25 +22,35 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
   const [timeLeft, setTimeLeft] = useState(timerValue);
   const [loggedInUserId, setLoggedInUserId] = useState('');
 
-	const isSurveyor = useMatch("/surveyor")
+	const isSurveyor = useMatch("/surveyor");
 
-	const cachedSocket: Socket<ServerToClientEvents, ClientToServerEvents> = useMemo(()=> io(
-    'http://localhost:8080'
-  , {auth: {
-		token: (!isSurveyor) ? localStorage.getItem('token'): ''
-	}}), [isSurveyor])
-  cachedSocket.on('currentTimer', (counter, currentUser) => {
-    setTimeLeft(counter);
-    setActiveParticipant(currentUser);
-  });
-  cachedSocket.on('timerReset', (counter, currentUser) => {
-    setTimeLeft(counter);
-    setActiveParticipant(currentUser);
-  });
+	const socketRef = useRef<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
 
+	useEffect(() => {
+		socketRef.current = io(
+			'http://localhost:8080'
+		, {auth: {
+			token: (!isSurveyor) ? localStorage.getItem('token'): ''
+		}});
+		socketRef.current.on('currentTimer', (counter, currentUser) => {
+			setTimeLeft(counter);
+			setActiveParticipant(currentUser);
+		});
+		socketRef.current.on('timerReset', (counter, currentUser) => {
+			setTimeLeft(counter);
+			setActiveParticipant(currentUser);
+		});
+		return () => {
+			socketRef.current?.disconnect()
+		}
+	}, [isSurveyor])
+
+
+
+	
   const onButtonClickHandler = () => {
     console.log('fired!');
-    cachedSocket.emit('timerSkip');
+    socketRef.current?.emit('timerSkip');
   };
   useEffect(() => {
     const timerId = setInterval(() => {
