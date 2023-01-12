@@ -37,7 +37,7 @@ const BidsTable = () => {
 		setErrorDataLoading('');
 		setIsDataLoading(true)
     axios
-      .get<{ message: string; bids: BidItem[] }>('http://terminal-be-production.up.railway.app/bids')
+      .get<{ message: string; bids: BidItem[] }>('https://terminal-be-production.up.railway.app/bids')
       .then((response) => {
 				setBidData(response.data.bids)
 			})

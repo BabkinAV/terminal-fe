@@ -26,7 +26,7 @@ const Home = ({
     setLoginError('');
     setIsDataLoading(true);
     axios
-      .post<{ userId: string; token: string }>('http://terminal-be-production.up.railway.app/login', {
+      .post<{ userId: string; token: string }>('https://terminal-be-production.up.railway.app/login', {
         name: participant,
       })
       .then((response) => {
