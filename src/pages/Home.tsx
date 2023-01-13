@@ -49,9 +49,13 @@ const Home = ({
 
   return (
     <>
-      <Typography variant="h4" textAlign="center" sx={{ py: 4 }}>
+      <Typography variant="h4" textAlign="center" sx={{ pt: 4 }}>
+        Комната для проведения торгов
+      </Typography>
+      <Typography variant="h6" textAlign="center" sx={{ pt: 2, pb:4 }}>
         Выберите тип доступа:
       </Typography>
+
       <Container maxWidth="sm">
         <Grid container spacing={8}>
           <Grid item xs={6}>

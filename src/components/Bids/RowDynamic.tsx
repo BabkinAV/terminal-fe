@@ -51,7 +51,6 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
 
 	
   const onButtonClickHandler = () => {
-    console.log('fired!');
     socketRef.current?.emit('timerSkip');
   };
   useEffect(() => {
