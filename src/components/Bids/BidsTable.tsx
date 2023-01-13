@@ -29,6 +29,9 @@ interface BidItem {
   };
 }
 
+const backendAddress = process.env.REACT_APP_BACKEND_ADDRESS;
+
+
 const BidsTable = () => {
   const [bidData, setBidData] = useState<BidItem[]>([]);
 	const [isDataLoading, setIsDataLoading] = useState(false);
@@ -37,7 +40,7 @@ const BidsTable = () => {
 		setErrorDataLoading('');
 		setIsDataLoading(true)
     axios
-      .get<{ message: string; bids: BidItem[] }>('https://terminal-be-production.up.railway.app/bids')
+      .get<{ message: string; bids: BidItem[] }>(`${backendAddress!}/bids`)
       .then((response) => {
 				setBidData(response.data.bids)
 			})

@@ -5,7 +5,9 @@ import { TableRow, TableCell, Button } from '@mui/material';
 import convertSecondsFromString from '../../helpers/convertSecondsToString';
 import {useMatch} from 'react-router-dom'
 
-const timerValue = 30;
+const backendAddress = process.env.REACT_APP_BACKEND_ADDRESS;
+
+
 
 interface ServerToClientEvents {
   noArg: () => void;
@@ -19,7 +21,7 @@ interface ClientToServerEvents {
 
 const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
   const [activeParticipant, setActiveParticipant] = useState('');
-  const [timeLeft, setTimeLeft] = useState(timerValue);
+  const [timeLeft, setTimeLeft] = useState(120);
   const [loggedInUserId, setLoggedInUserId] = useState('');
 
 	const isSurveyor = useMatch("/surveyor");
@@ -28,7 +30,7 @@ const RowDynamic = ({ participantIdList }: { participantIdList: string[] }) => {
 
 	useEffect(() => {
 		socketRef.current = io(
-			'https://terminal-be-production.up.railway.app'
+			backendAddress!
 		, {auth: {
 			token: (!isSurveyor) ? localStorage.getItem('token'): ''
 		}});

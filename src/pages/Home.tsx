@@ -25,12 +25,13 @@ const Home = ({
   const onParticipantClickHandler = (participant: string) => {
     setLoginError('');
     setIsDataLoading(true);
+    const backendAddress = process.env.REACT_APP_BACKEND_ADDRESS;
+		
     axios
-      .post<{ userId: string; token: string }>('https://terminal-be-production.up.railway.app/login', {
+      .post<{ userId: string; token: string }>(`${backendAddress}/login`, {
         name: participant,
       })
       .then((response) => {
-        console.log(response.data.userId, ' ', response.data.token);
         localStorage.setItem('token', response.data.token);
         handleAuthorizedTrue();
         navigate('/participant');
@@ -59,7 +60,7 @@ const Home = ({
                 variant="contained"
                 key={participantsArr.indexOf(el)}
                 disableElevation
-								loading={isDataLoading}
+                loading={isDataLoading}
                 fullWidth
                 sx={{ my: 2 }}
                 onClick={() => onParticipantClickHandler(el)}
@@ -73,7 +74,7 @@ const Home = ({
               variant="contained"
               disableElevation
               fullWidth
-							loading={isDataLoading}
+              loading={isDataLoading}
               sx={{ my: 2 }}
               color="success"
               onClick={onSurveyorClickHandler}
